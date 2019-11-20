@@ -4,7 +4,7 @@
   hosts: 10.243.215.21
   tasks:
     - name: login
-      raw: /usr/bin/oc login https://api.{{ cluster_ocp }}.devmandiri.lab:6443 --username=tower --password=mandiri123 --insecure-skip-tls-verify=true
+      raw: /usr/bin/oc login https://api.{{ cluster_ocp }}.devmandiri.lab:6443 --username=user --password=pass --insecure-skip-tls-verify=true
     - name: assign label to new nodes
       raw: /usr/bin/oc label node {{ vm_name | lower }}.{{ cluster_ocp }}.devmandiri.lab application={{ project_ocp }}
       ignore_errors: yes
