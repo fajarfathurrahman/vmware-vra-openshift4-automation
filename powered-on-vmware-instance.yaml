@@ -1,0 +1,17 @@
+---
+- name: Provision VM for OCP4 Worker
+  hosts: localhost
+  gather_facts: no
+  tasks:
+  - name:
+    vmware_guest:
+      hostname: "{{ lookup('env', 'VMWARE_HOST') }}"
+      username: "{{ lookup('env', 'VMWARE_USER') }}"
+      password: "{{ lookup('env', 'VMWARE_PASSWORD') }}"
+      validate_certs: False
+      name: "{{ vm_name }}"
+      state: poweredon
+
+  - name: wait for provisioning RHCOS
+    wait_for: timeout=300
+    delegate_to: localhost

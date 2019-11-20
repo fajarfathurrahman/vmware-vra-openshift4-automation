@@ -1,0 +1,33 @@
+---
+- name: DHCP PLAYBOOK
+  gather_facts: no
+  hosts: 10.243.215.24
+  tasks:
+    - name: dhcp add static ip
+      blockinfile:
+        path: /etc/dhcp/dhcpd.conf
+        insertafter: EOF
+        #marker: false
+        block: |
+          # {{ vm_name | lower }}.{{ cluster_ocp }}.devmandiri.lab
+          host {{ vm_name | lower }}.{{ cluster_ocp }}.devmandiri.lab {
+                  hardware ethernet {{ mac_address }};
+                  fixed-address {{ ip_address }};
+                  }
+
+    - name: remove line BEGIN ansible in dhcpd.conf
+      lineinfile:
+        path: /etc/dhcp/dhcpd.conf
+        state: absent
+        line: '# BEGIN ANSIBLE MANAGED BLOCK'
+
+    - name: remove line END ansible in dhcpd.conf
+      lineinfile:
+        path: /etc/dhcp/dhcpd.conf
+        state: absent
+        line: '# END ANSIBLE MANAGED BLOCK'
+
+    - name: restart service DHCP
+      service:
+        name: dhcpd
+        state: restarted

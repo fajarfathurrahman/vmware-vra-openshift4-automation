@@ -1,0 +1,15 @@
+---
+- name: OCP4 Get Status
+  gather_facts: no
+  hosts: 10.243.215.21
+  tasks:
+    - name: login
+      raw: /usr/bin/oc login https://api.{{ cluster_ocp }}.devmandiri.lab:6443 --username=tower --password=mandiri123 --insecure-skip-tls-verify=true
+    - name: nodes Status
+      raw: /usr/bin/oc get nodes | grep {{ vm_name | lower }}.{{ cluster_ocp }}.devmandiri.lab | awk -F ' ' '{printf $2}'
+      register: result_status
+      retries: 10
+      delay: 60
+      until: result_status.stdout == "Ready"
+    - debug:
+        msg: "{{ result_status.stdout }}"

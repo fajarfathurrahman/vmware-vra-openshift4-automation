@@ -1,0 +1,25 @@
+---
+- name: DNS PLAYBOOK
+  gather_facts: no
+  hosts: 10.243.215.24
+
+  vars:
+    ipv4_list: "{{ ip_address }}"
+
+  tasks:
+    - name: Add forward A record
+      lineinfile:
+        path: /var/named/rempoa.devmandiri.lab.hosts
+        line: '{{ vm_name | lower }}.{{ cluster_ocp }}.devmandiri.lab.   IN      A       {{ ip_address }}'
+        create: yes
+        insertafter: EOF
+
+    - name: Add Reverse PTR record
+      lineinfile:
+        path: /var/named/10.243.215.rev
+        line: "{{ ipv4_list | ipaddr('revdns') }}     IN      PTR     {{ vm_name | lower }}.{{ cluster_ocp }}.devmandiri.lab."
+        create: yes
+        insertafter: EOF
+
+    - name: Restart named services
+      raw: rndc reload

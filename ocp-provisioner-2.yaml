@@ -1,0 +1,16 @@
+---
+- name: OCP4 PLAYBOOK
+  gather_facts: no
+  hosts: 10.243.215.21
+  tasks:
+    - name: login
+      raw: /usr/bin/oc login https://api.{{ cluster_ocp }}.devmandiri.lab:6443 --username=tower --password=mandiri123 --insecure-skip-tls-verify=true
+    - name: assign label to new nodes
+      raw: /usr/bin/oc label node {{ vm_name | lower }}.{{ cluster_ocp }}.devmandiri.lab application={{ project_ocp }}
+      ignore_errors: yes
+    - name: create new project, role and anotate
+      raw: /usr/bin/oc adm new-project {{ project_ocp }} --admin={{ user_ocp }} --node-selector=application={{ project_ocp }}
+      ignore_errors: yes
+    - name: Create default storage quota
+      raw: /usr/bin/oc create quota default-storage --hard=requests.storage=10Gi,persistentvolumeclaims=10 --namespace {{ project_ocp }}
+      ignore_errors: yes

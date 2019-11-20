@@ -1,0 +1,17 @@
+---
+- name: OCP4 RESULT
+  gather_facts: no
+  hosts: 10.243.215.21
+  tasks:
+    - name: login
+      raw: /usr/bin/oc login https://api.{{ cluster_ocp }}.devmandiri.lab:6443 --username=tower --password=mandiri123 --insecure-skip-tls-verify=true
+    - name: nodes post-verification
+      raw: /usr/bin/oc get nodes {{ vm_name | lower }}.{{ cluster_ocp }}.devmandiri.lab -o wide -L application
+      register: result_nodes
+    - debug:
+        msg: "{{ result_nodes }}"
+    - name: project post-verification
+      raw: /usr/bin/oc get project {{ project_ocp }} -o wide
+      register: result_project
+    - debug:
+        msg: "{{ result_project }}"

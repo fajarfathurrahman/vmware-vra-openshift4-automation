@@ -1,0 +1,22 @@
+---
+- hosts: localhost
+  become: yes
+  tasks:
+  - name: Gather vmware facts for mac-address
+    vmware_guest_facts:
+      hostname: "{{ lookup('env', 'VMWARE_HOST') }}"
+      username: "{{ lookup('env', 'VMWARE_USER') }}"
+      password: "{{ lookup('env', 'VMWARE_PASSWORD') }}"
+      datacenter: JKTRPDEV
+      validate_certs: no
+      name: "{{ vm_name }}"
+    delegate_to: localhost
+    register: facts
+
+  - debug:
+      msg: "{{ facts.instance.hw_eth0.macaddress }}"
+
+  - name: register mac-address
+    set_stats:
+      data:
+        mac_address: "{{ facts.instance.hw_eth0.macaddress }}"
